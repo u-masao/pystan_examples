@@ -1,4 +1,4 @@
-.PHONY: clean lint create_environment
+.PHONY: clean lint create_environment data
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -6,12 +6,16 @@
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROJECT_NAME = pystan_examples
-PYTHON_INTERPRETER = python3
+PYTHON_INTERPRETER = poetry run python
 
 
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
+
+## Make dataset
+data:
+	$(PYTHON_INTERPRETER) -m src.data.make_dataset data/raw/dataset.pickle
 
 ## Lint using flake8
 lint:
