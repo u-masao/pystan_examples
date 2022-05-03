@@ -14,7 +14,7 @@ PYTHON_INTERPRETER = python3
 #################################################################################
 
 ## Make requirements.txt
-requirements.txt: pypoetry.toml poetry.lock
+requirements.txt: pyproject.toml poetry.lock
 	poetry export -f requirements.txt --output requirements.txt
 
 ## Lint using flake8
