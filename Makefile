@@ -1,4 +1,4 @@
-.PHONY: clean data lint
+.PHONY: clean lint create_environment
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -12,10 +12,6 @@ PYTHON_INTERPRETER = python3
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
-
-## Make requirements.txt
-requirements.txt: pyproject.toml poetry.lock
-	poetry export -f requirements.txt --output requirements.txt
 
 ## Lint using flake8
 lint:
@@ -36,6 +32,9 @@ clean:
 # PROJECT RULES                                                                 #
 #################################################################################
 
+## Make requirements.txt
+requirements.txt: pyproject.toml poetry.lock
+	poetry export -f requirements.txt --output requirements.txt
 
 
 #################################################################################
