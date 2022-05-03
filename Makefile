@@ -17,6 +17,10 @@ PYTHON_INTERPRETER = poetry run python
 data:
 	$(PYTHON_INTERPRETER) -m src.data.make_dataset data/raw/dataset.pickle
 
+## DVC repro
+repro:
+	poetry run dvc repro
+
 ## Lint using flake8
 lint:
 	poetry run isort src
