@@ -10,8 +10,10 @@ def main(**kwargs):
     logger = logging.getLogger(__name__)
     logger.info("Task start")
 
-    dataset = fetch_openml(name="RAM_price", version=1, as_frame=True)  # data_id=40601
-    dataset.frame.to_pickle(kwargs['output_filepath'])
+    dataset = fetch_openml(
+        name="RAM_price", version=1, as_frame=True
+    )  # data_id=40601
+    dataset.frame.to_pickle(kwargs["output_filepath"])
     logger.info(f'save pickle: {kwargs["output_filepath"]}')
 
     logger.info("Task comlete")
