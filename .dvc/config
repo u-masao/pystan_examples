@@ -1,2 +1,4 @@
+[core]
+    autostage = true
 ['remote "storage"']
     url = /content/drive/MyDrive/github/pystan_examples/dvc/
