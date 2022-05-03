@@ -80,6 +80,8 @@ test_environment:
 # PROJECT RULES                                                                 #
 #################################################################################
 
+requirements.txt:
+	poetry export -f requirements.txt --output requirements.txt
 
 
 #################################################################################
