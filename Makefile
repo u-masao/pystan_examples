@@ -38,7 +38,7 @@ clean:
 
 ## run visualize
 visualize:
-	poetry run streamlit src/visualization/visualize
+	poetry run streamlit run src/visualization/visualize.py
 
 #################################################################################
 # PROJECT RULES                                                                 #
