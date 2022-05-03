@@ -36,6 +36,10 @@ clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
+## run visualize
+visualize:
+	poetry run streamlit src/visualization/visualize
+
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################
@@ -43,7 +47,6 @@ clean:
 ## Make requirements.txt
 requirements.txt: pyproject.toml poetry.lock
 	poetry export -f requirements.txt --output requirements.txt
-
 
 #################################################################################
 # Self Documenting Commands                                                     #
