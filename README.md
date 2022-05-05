@@ -1,7 +1,30 @@
 pystan_examples
 ==============================
 
-A short description of the project.
+
+Install
+-------
+
+```:shell
+$ pip install pystan-example
+```
+
+Reference
+---------
+
+
+- PyStan official site
+
+  https://pystan.readthedocs.io/en/latest/
+
+- 書籍『基礎からわかる時系列分析』（技術評論社，2018年）サポートサイト
+
+  https://github.com/hagijyun/tsbook
+
+- Stan official site
+
+  https://mc-stan.org/
+
 
 Project Organization
 ------------
