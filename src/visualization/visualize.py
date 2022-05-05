@@ -8,6 +8,7 @@ import pandas as pd
 import rdata
 import stan
 import streamlit as st
+from vital_statistics_jp import read_prompt
 
 
 def preprocess(df):
@@ -71,20 +72,55 @@ def app_0_0_getting_started():
 
 
 def simulation(
-    stan_code, stan_data, num_chains=4, num_samples=1000, seed=1234
+    stan_code,
+    stan_data,
+    num_chains=4,
+    num_samples=2000,
+    num_warmup=1000,
+    num_thin=1,
+    seed=1234,
 ):
-    st.code(stan_code, language="stan")
-    st.write(stan_data)
     with st.spinner("building stan code"):
         model = stan.build(stan_code, data=stan_data, random_seed=seed)
     with st.spinner("sampling now"):
-        fit = model.sample(num_chains=num_chains, num_samples=num_samples)
+        fit = model.sample(
+            num_chains=num_chains,
+            num_samples=num_samples,
+            num_thin=num_thin,
+            num_warmup=num_warmup,
+        )
 
-    fig, ax = plt.subplots(2, 2)
+    n_params = len(fit.param_names)
+    fig, ax = plt.subplots(n_params, 2, figsize=(10, 2 * n_params))
     arviz.plot_trace(fit, axes=ax, plot_kwargs=dict(alpha=0.3))
+    fig.tight_layout()
     st.pyplot(fig)
 
+    df = fit.to_frame()
+    summary_df = df.describe().T
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.plot(stan_data["y"])
+    ax.plot(summary_df["mean"].iloc[7:].values)
+    ax.fill_between(
+        [x for x in range(len(summary_df) - 7)],
+        summary_df["25%"].iloc[7:].values,
+        summary_df["75%"].iloc[7:].values,
+        alpha=0.3,
+    )
+    ax.grid()
+    fig.tight_layout()
+    st.pyplot(fig)
+
+    st.header("detail")
+    st.dataframe(df)
+    st.code(stan_code, language="stan")
+    st.write(stan_data)
     st.write(dir(fit))
+    st.write(f"warmup: {fit.num_warmup}")
+    st.write(f"samples: {fit.num_samples}")
+    st.write(f"thin: {fit.num_thin}")
+    st.write(f"chains: {fit.num_chains}")
     return fit
 
 
@@ -95,10 +131,6 @@ def load_rdata(url):
 
 
 def app_tsbook_10_1():
-    dataset = load_rdata(
-        "https://github.com/hagijyun/tsbook/raw/master/"
-        "ArtifitialLocalLevelModel.RData"
-    )
 
     stan_code = """
     data{
@@ -128,6 +160,10 @@ def app_tsbook_10_1():
     }
     """
 
+    dataset = load_rdata(
+        "https://github.com/hagijyun/tsbook/raw/master/"
+        "ArtifitialLocalLevelModel.RData"
+    )
     stan_data = {}
     stan_data["t_max"] = int(dataset["t_max"][0])
     stan_data["y"] = dataset["y"].values
@@ -136,23 +172,7 @@ def app_tsbook_10_1():
     stan_data["m0"] = dataset["mod"]["m0"][0]
     stan_data["C0"] = dataset["mod"]["C0"]
 
-    fit = simulation(stan_code, stan_data)
-    df = fit.to_frame()
-    summary_df = df.describe().T
-
-    fig, ax = plt.subplots()
-    ax.plot(dataset["y"].values)
-    ax.plot(summary_df["mean"].iloc[7:].values)
-    ax.fill_between(
-        [x for x in range(len(summary_df) - 7)],
-        summary_df["25%"].iloc[7:].values,
-        summary_df["75%"].iloc[7:].values,
-        alpha=0.3,
-    )
-    ax.grid()
-    st.pyplot(fig)
-
-    st.dataframe(df)
+    simulation(stan_code, stan_data)
 
 
 def main():
