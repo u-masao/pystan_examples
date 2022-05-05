@@ -1,6 +1,9 @@
 import urllib.request
 from decimal import ROUND_HALF_UP, Decimal
 
+import arviz
+import japanize_matplotlib  # noqa: F401
+import matplotlib.pyplot as plt
 import pandas as pd
 import rdata
 import stan
@@ -67,14 +70,21 @@ def app_0_0_getting_started():
     simulation(stan_code, stan_data)
 
 
-def simulation(stan_code, stan_data, num_chains=4, num_samples=1000, seed=1234):
+def simulation(
+    stan_code, stan_data, num_chains=4, num_samples=1000, seed=1234
+):
+    st.code(stan_code, language="stan")
+    st.write(stan_data)
     with st.spinner("building stan code"):
         model = stan.build(stan_code, data=stan_data, random_seed=seed)
     with st.spinner("sampling now"):
         fit = model.sample(num_chains=num_chains, num_samples=num_samples)
-    df = fit.to_frame()
-    st.dataframe(df)
-    st.dataframe(df.describe().T)
+
+    fig, ax = plt.subplots(2, 2)
+    arviz.plot_trace(fit, axes=ax, plot_kwargs=dict(alpha=0.3))
+    st.pyplot(fig)
+
+    st.write(dir(fit))
     return fit
 
 
@@ -89,15 +99,6 @@ def app_tsbook_10_1():
         "https://github.com/hagijyun/tsbook/raw/master/"
         "ArtifitialLocalLevelModel.RData"
     )
-
-    print(type(dataset))
-
-    for key, value in dataset.items():
-        print("====", key, type(value))
-        if type(value) == dict:
-            for k, v in value.items():
-                print(k, v)
-        print(value)
 
     stan_code = """
     data{
@@ -135,8 +136,23 @@ def app_tsbook_10_1():
     stan_data["m0"] = dataset["mod"]["m0"][0]
     stan_data["C0"] = dataset["mod"]["C0"]
 
-    print(stan_data)
-    simulation(stan_code, stan_data)
+    fit = simulation(stan_code, stan_data)
+    df = fit.to_frame()
+    summary_df = df.describe().T
+
+    fig, ax = plt.subplots()
+    ax.plot(dataset["y"].values)
+    ax.plot(summary_df["mean"].iloc[7:].values)
+    ax.fill_between(
+        [x for x in range(len(summary_df) - 7)],
+        summary_df["25%"].iloc[7:].values,
+        summary_df["75%"].iloc[7:].values,
+        alpha=0.3,
+    )
+    ax.grid()
+    st.pyplot(fig)
+
+    st.dataframe(df)
 
 
 def main():
