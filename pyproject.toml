@@ -16,6 +16,7 @@ streamlit = "^1.8.1"
 rdata = "^0.7"
 arviz = "^0.12.0"
 vital-statistics-jp = "^0.1.6"
+pandas = "1.3.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
